@@ -12,7 +12,7 @@
 #ifdef OSX
 #define psCommand "ps -face"
 #else
-#define psCommand "ps -afe"
+#define psCommand "ps -afe | awk ' NR >1{print $4\"\t\"$5}' | sort -n +1"
 #endif 
 
 /* Typedef Declarations */
@@ -29,7 +29,7 @@ struct node pstree;
 int getline(char *line, FILE *fp, int size);
 int growTree(struct node *node, int pid, int ppid);
 struct node *lookupNode(struct node *node, int pid);
-void printTree(struct node *tree);
+void printTree(struct node *tree, int indentSize);
 
 
 int main (int argc, char **argv)
@@ -41,7 +41,7 @@ int main (int argc, char **argv)
     int pidIndex, ppidIndex, cmdIndex = -1;
     char *token;
 
-	memset((void*)&pstree, 0, sizeof(pstree));
+	memset((void*)&pstree, 0, sizeof(pstree));	
 
     fp =(FILE*) popen(psCommand, "r");
 
@@ -58,13 +58,10 @@ int main (int argc, char **argv)
 
         while (NULL != token)
         {
-            if (0 == lineNumber)
-            {
-                if (0 == strncmp("PID", token, sizeof("PID")))      {  pidIndex = tokenNumber;}
-                if (0 == strncmp("PPID", token, sizeof("PPID")))    { ppidIndex = tokenNumber;}
-            }
-            else
-            {
+
+			pidIndex = 0;
+			ppidIndex = 1;
+			
                 if (tokenNumber == pidIndex)
                 {
                     // printf("Token: %s\n",token);
@@ -80,14 +77,14 @@ int main (int argc, char **argv)
                     {
                         pid = atoi(token);
                     }
-                    // printf("PID: %3d\t", pid);
+                     printf("PID: %3d\t", pid);
                 }
                 else if (tokenNumber == ppidIndex)
                 {
                     ppid = atoi(token);
-                    // printf("PPID: %4d\n", ppid);
+                     printf("PPID: %4d\n", ppid);
                 }
-            }
+            
 			if ((pid >= -5) && (ppid >= -5)) /*If both pid and ppid are set, grow the tree and move on */
 			{
 				growTree(&pstree, pid, ppid);
@@ -100,16 +97,29 @@ int main (int argc, char **argv)
 
         lineNumber++;
     }
-	printTree(&pstree);
+	printTree(&pstree, 0);
 	printf("Done");
     pclose(fp);
 }
 
-void printTree(struct node *node)
+void printTree(struct node *node, int indentSize)
 {
-	printf("|->%d\n",node->pid);
-	if (node->child) printTree(node->child);
-	if (node->sibling) printTree(node->sibling);
+	char indents[128];
+	char *indentLine = "	";
+	int i;
+	
+	//Zero out the indents string
+	memset(indents, 0, sizeof(indents));
+
+	// Make indent string larger up to indentSize
+	for (i = 0; i < indentSize; i++)
+	{
+		strcat(indents, indentLine);
+	}
+	
+	printf("%s|->%d\n",indents, node->pid);
+	if (node->child) printTree(node->child, indentSize+1);
+	if (node->sibling) printTree(node->sibling, indentSize);
 
 	
 }
