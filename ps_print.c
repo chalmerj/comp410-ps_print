@@ -1,4 +1,3 @@
-#include <ansi.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
@@ -9,7 +8,11 @@
 */
 
 /* Definitions */
+#ifdef OSX
+#define psCommand "ps -face"
+#else
 #define psCommand "ps -afe"
+#endif 
 
 /* Typedef Declarations */
 struct node {
@@ -31,7 +34,7 @@ void printTree(struct node *tree);
 int main (int argc, char **argv)
 {
     FILE *fp = 0;
-    char line[128];
+    char line[256];
     int status = 0;
     int lineNumber = 0;
     int pidIndex, ppidIndex, cmdIndex = -1;
