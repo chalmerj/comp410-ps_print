@@ -9,8 +9,8 @@
 */
 
 /* Definitions */
-#ifdef OSX
-#define psCommand "ps -face"
+#ifdef MACOSX
+#define psCommand "ps -face | awk ' NR >1{print $2\"\t\"$3}' | sort -n -k 2"
 #else
 #define psCommand "ps -afe | awk ' NR >1{print $4\"\t\"$5}' | sort -n +1"
 #endif 
