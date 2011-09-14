@@ -23,6 +23,7 @@ Code © 2011 Steven and Jeremy Chalmer
 
 Exampe Output (Minix-3):
 
+	bash:~#./ps_print
 		|->0
 			|->-2
 			|->-1
