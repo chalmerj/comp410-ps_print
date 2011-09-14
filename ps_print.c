@@ -6,26 +6,28 @@
 
 /* #TODO
  * -- Implement Tree Functions
- * -- Handle '(' and ')' in token (remove them?)
 */
 
 /* Definitions */
 #define psCommand "ps -afe"
 
 /* Typedef Declarations */
-typedef struct tree_s
-{
-    struct tree_s *parent;  /* Ptr to the Parent Node */
-    struct tree_s *child;   /* Ptr to the first child node */
-    struct tree_s *sib;     /* Ptr to a sibling node (same parent ptr) */
-    int leaf;               /*The actual PID of the process */
-} Tree_t;
+struct node {
+	int pid;
+	struct node *parent;
+	struct node *child;
+	struct node *sibling;
+};
+
+struct node pstree;
 
 /* Prototypes */
 int getline(char *line, FILE *fp, int size);
-/*int growTree(Tree_t *tree, int pid, int ppid);
-*Tree_t *lookUpLeaf(Tree_t *tree, int leaf);
-*void printTree(Tree_t *tree, int indent);
+int growTree(struct node *node, int pid, int ppid);
+struct node *lookupNode(struct node *node, int pid);
+
+/*
+*	void printTree(Tree_t *tree, int indent);
 */
 
 
@@ -37,6 +39,10 @@ int main (int argc, char **argv)
     int lineNumber = 0;
     int pidIndex, ppidIndex, cmdIndex = -1;
     char *token;
+
+
+
+	memset((void*)&pstree, 0, sizeof(pstree));
 
     fp =(FILE*) popen(psCommand, "r");
 
@@ -93,6 +99,82 @@ int main (int argc, char **argv)
 
     pclose(fp);
 }
+int growTree(struct node *node, int pid, int ppid)
+{
+	struct node *thisNode;
+	struct node *parentNode;
+	
+	thisNode = lookupNode(node,ppid);
+	
+	if (thisNode) /*Node found; add either child or child's sibling */
+	{
+		parentNode = thisNode; /*Set parent node */
+	
+		if (thisNode->child) /*If this node has a child, move to child and follow siblings */
+		{
+			thisNode = thisNode->child;
+			while(thisNode->sibling) thisNode = thisNode->sibling;
+			/* malloc a new node */
+			thisNode->sibling = (struct node* )malloc(sizeof(struct node));
+			if (NULL == thisNode->sibling) return -1; /*malloc failed and returned NULL */
+			/*Fill in node values, parented to parentNode */
+			thisNode->sibling->parent = parentNode;
+			thisNode->sibling->child = NULL;
+			thisNode-sibling->sibling = NULL;
+			thisNode->sibling->pid = pid;
+		}
+		
+		else /*If this node doesn't have a child, create one */
+		{
+			thisNode->child = (struct node* )malloc(sizeof(struct node));
+			if (NULL == thisNode->child) return -1; /*malloc failed and returned NULL */
+			thisNode->child->parent = parentNode;
+			thisNode->child->child = NULL;
+			thisNode->child->sibling = NULL;
+			thisNode->child->pid = pid;
+		}
+		
+	}
+	else	/*Create new node, starting with PPIDs. The children PIDs come after */
+	{
+		thisNode = node;
+		thisNode->pid = ppid; 
+		thisNode->parent = NULL;
+		thisNode->child = NULL;
+		thisNode->sibling = NULL;
+		/*Debug Printing*/
+		printf("growTree:New root:this->pid %d\n", thisTree->pid);
+	}
+}
+
+
+struct node *lookupNode(struct node *node, int pid)
+{
+	struct node *thisNode = node;
+	
+	/* Null check: If we're passed a null input node, return 0 cast os a node. */
+	if (NULL == thisNode) return (struct node*)0;
+	
+	while (thisNode)
+	{
+		if (thisNode->pid == pid) 
+		{
+			return thisNode; /* We found it, return this node */
+		}
+		
+		else 
+		{
+			struct node *temp = lookupNode(thisNode->sibling, PID); /* Recursively check sibling nodes */
+			
+			if (temp) return temp; /*Found in sibling node */
+		}
+		
+		thisNode = thisNode->child; /* Move to child node, search again */
+	}
+	
+	return thisNode; /* Not in the tree */
+}
+
 
 int getline(char *line, FILE *fp, int size)
 {
