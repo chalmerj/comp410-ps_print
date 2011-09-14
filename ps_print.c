@@ -37,8 +37,6 @@ int main (int argc, char **argv)
     int pidIndex, ppidIndex, cmdIndex = -1;
     char *token;
 
-
-
 	memset((void*)&pstree, 0, sizeof(pstree));
 
     fp =(FILE*) popen(psCommand, "r");
@@ -105,9 +103,10 @@ int main (int argc, char **argv)
 
 void printTree(struct node *node)
 {
-	printf("|->%d",node->pid);
+	printf("|->%d\n",node->pid);
 	if (node->child) printTree(node->child);
 	if (node->sibling) printTree(node->sibling);
+
 	
 }
 
@@ -171,26 +170,32 @@ struct node *lookupNode(struct node *node, int pid)
 	struct node *thisNode = node;
 	
 	/* Null check: If we're passed a null input node, return 0 cast os a node. */
-	if (NULL == thisNode) return (struct node*)0;
+	if (NULL == thisNode) 
+	{
+		// printf("lookupNode: NULL Match, returning 0\n");
+		return (struct node*)0;
+	}
 	
 	while (thisNode)
 	{
 		if (thisNode->pid == pid) 
 		{
 			return thisNode; /* We found it, return this node */
+			// printf("lookupNode: PID Match; returning thisNode\n");
 		}
-		
-		else 
+
 		{
-			struct node *temp = lookupNode(thisNode->sibling, pid); /* Recursively check sibling nodes */
-			
-			if (temp) return temp; /*Found in sibling node */
+		// printf("lookupNode: recursively searching\n");
+		struct node *temp = lookupNode(thisNode->sibling, pid); /* Recursively check sibling nodes */
+		if (temp) return temp; /*Found in sibling node */
 		}
 		
 		thisNode = thisNode->child; /* Move to child node, search again */
+		// printf("lookupNode: moving to child\n");
 	}
 	
 	return thisNode; /* Not in the tree */
+	// printf("lookupNode: returning thisNode\n");
 }
 
 
