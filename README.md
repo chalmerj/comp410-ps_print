@@ -2,6 +2,21 @@
 
 This is a homework assignment (#1) for COMP410 - Operating Systems at Loyola University. 
 
+### Usage
+Can be compiled under Mac OS X or Minix-3, using the included makefile. 
+
+Minix:
+
+	make
+	
+Mac OS X:
+
+	make MACOSX
+
+Then run: 
+
+	./ps_print
+
 Code © 2011 Steven and Jeremy Chalmer 
 
 ---
