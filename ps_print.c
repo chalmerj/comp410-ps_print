@@ -4,8 +4,7 @@
 #include <stdlib.h>
 
 /* #TODO
- * -- Fix 'Too Many Root Nodes' issue.
- * -- Finish printTree() function. 
+*	-- Beautify printTree function.  
 */
 
 /* Definitions */
