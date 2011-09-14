@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 /* #TODO
-*	-- Beautify printTree function.  
+*	-- Beautify printTree function. 
 */
 
 /* Definitions */
