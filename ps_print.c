@@ -105,9 +105,9 @@ int main (int argc, char **argv)
 
 void printTree(struct node *node)
 {
-	printf("|->%d",node->leaf);
+	printf("|->%d",node->pid);
 	if (node->child) printTree(node->child);
-	if (node->sibling) printTree(node-sibling);
+	if (node->sibling) printTree(node->sibling);
 	
 }
 
