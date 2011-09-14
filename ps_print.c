@@ -77,12 +77,12 @@ int main (int argc, char **argv)
                     {
                         pid = atoi(token);
                     }
-                     printf("PID: %3d\t", pid);
+                     // printf("PID: %3d\t", pid);
                 }
                 else if (tokenNumber == ppidIndex)
                 {
                     ppid = atoi(token);
-                     printf("PPID: %4d\n", ppid);
+                     // printf("PPID: %4d\n", ppid);
                 }
             
 			if ((pid >= -5) && (ppid >= -5)) /*If both pid and ppid are set, grow the tree and move on */
@@ -98,7 +98,7 @@ int main (int argc, char **argv)
         lineNumber++;
     }
 	printTree(&pstree, 0);
-	printf("Done");
+	printf("Done\n");
     pclose(fp);
 }
 
@@ -148,8 +148,8 @@ int growTree(struct node *node, int pid, int ppid)
 			thisNode->sibling->sibling = NULL;
 			thisNode->sibling->pid = pid;
 			/*Debug Printing*/
-			printf("growTree:New sibling:parent->pid %d\t sibling->pid %d\n", 
-				thisNode->sibling->parent->pid, thisNode->sibling->pid);
+			// printf("growTree:New sibling:parent->pid %d\t sibling->pid %d\n", 
+			// 				thisNode->sibling->parent->pid, thisNode->sibling->pid);
 		}
 		
 		else /*If this node doesn't have a child, create one */
@@ -161,8 +161,8 @@ int growTree(struct node *node, int pid, int ppid)
 			thisNode->child->sibling = NULL;
 			thisNode->child->pid = pid;
 			/*Debug Printing*/
-			printf("growTree:New child:parent->pid %d\t child->pid %d\n", 
-				thisNode->child->parent->pid, thisNode->child->pid);
+			// printf("growTree:New child:parent->pid %d\t child->pid %d\n", 
+			// 		thisNode->child->parent->pid, thisNode->child->pid);
 		}
 		
 	}
@@ -174,7 +174,7 @@ int growTree(struct node *node, int pid, int ppid)
 		thisNode->child = NULL;
 		thisNode->sibling = NULL;
 		/*Debug Printing*/
-		printf("growTree:New root:this->pid %d\n", thisNode->pid);
+		// printf("growTree:New root:this->pid %d\n", thisNode->pid);
 	}
 }
 
