@@ -25,10 +25,7 @@ struct node pstree;
 int getline(char *line, FILE *fp, int size);
 int growTree(struct node *node, int pid, int ppid);
 struct node *lookupNode(struct node *node, int pid);
-
-/*
-*	void printTree(Tree_t *tree, int indent);
-*/
+void printTree(struct node *tree);
 
 
 int main (int argc, char **argv)
@@ -51,8 +48,8 @@ int main (int argc, char **argv)
         status = getline(line, fp, sizeof(line));
         if (status <=0) break;
 
-        long int pid = -1;
-        int ppid = -1;
+        long int pid = -10;
+        int ppid = -10;
         int tokenNumber = 0;
 
         token = strtok(line, " \t\n");
@@ -68,7 +65,7 @@ int main (int argc, char **argv)
             {
                 if (tokenNumber == pidIndex)
                 {
-                    /*printf("Token: %s\n",token);*/
+                    // printf("Token: %s\n",token);
 
                     if (NULL != strchr(token, '('))     /* Check for '(' in PID, then convert to signed long */
                     {
@@ -81,24 +78,39 @@ int main (int argc, char **argv)
                     {
                         pid = atoi(token);
                     }
-                    printf("PID: %3d\t", pid);
+                    // printf("PID: %3d\t", pid);
                 }
                 else if (tokenNumber == ppidIndex)
                 {
                     ppid = atoi(token);
-                    printf("PPID: %4d\n", ppid);
+                    // printf("PPID: %4d\n", ppid);
                 }
             }
-
+			if ((pid >= -5) && (ppid >= -5)) /*If both pid and ppid are set, grow the tree and move on */
+			{
+				growTree(&pstree, pid, ppid);
+				break;
+			}
+			
             token = strtok(NULL, " \t\n");
             tokenNumber++;
         }
 
         lineNumber++;
     }
-
+	printTree(&pstree);
+	printf("Done");
     pclose(fp);
 }
+
+void printTree(struct node *node)
+{
+	printf("|->%d",node->leaf);
+	if (node->child) printTree(node->child);
+	if (node->sibling) printTree(node-sibling);
+	
+}
+
 int growTree(struct node *node, int pid, int ppid)
 {
 	struct node *thisNode;
