@@ -2,6 +2,9 @@
 
 This is a homework assignment (#1) for COMP410 - Operating Systems at Loyola University. 
 
+### Note:
+This is a delicate program. It is my first exposure to writing C. There is essentially no error checking, nor are there any memory protections. If the output of PS changes, it will break. **Use with caution.**
+
 ### Usage
 Can be compiled under Mac OS X or Minix-3, using the included makefile. 
 
