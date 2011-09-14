@@ -120,8 +120,11 @@ int growTree(struct node *node, int pid, int ppid)
 			/*Fill in node values, parented to parentNode */
 			thisNode->sibling->parent = parentNode;
 			thisNode->sibling->child = NULL;
-			thisNode-sibling->sibling = NULL;
+			thisNode->sibling->sibling = NULL;
 			thisNode->sibling->pid = pid;
+			/*Debug Printing*/
+			printf("growTree:New sibling:parent->pid %d\t sibling->pid %d\n", 
+				thisNode->sibling->parent->pid, thisNode->sibling->pid);
 		}
 		
 		else /*If this node doesn't have a child, create one */
@@ -132,6 +135,9 @@ int growTree(struct node *node, int pid, int ppid)
 			thisNode->child->child = NULL;
 			thisNode->child->sibling = NULL;
 			thisNode->child->pid = pid;
+			/*Debug Printing*/
+			printf("growTree:New child:parent->pid %d\t child->pid %d\n", 
+				thisNode->child->parent->pid, thisNode->child->pid);
 		}
 		
 	}
@@ -143,7 +149,7 @@ int growTree(struct node *node, int pid, int ppid)
 		thisNode->child = NULL;
 		thisNode->sibling = NULL;
 		/*Debug Printing*/
-		printf("growTree:New root:this->pid %d\n", thisTree->pid);
+		printf("growTree:New root:this->pid %d\n", thisNode->pid);
 	}
 }
 
@@ -164,7 +170,7 @@ struct node *lookupNode(struct node *node, int pid)
 		
 		else 
 		{
-			struct node *temp = lookupNode(thisNode->sibling, PID); /* Recursively check sibling nodes */
+			struct node *temp = lookupNode(thisNode->sibling, pid); /* Recursively check sibling nodes */
 			
 			if (temp) return temp; /*Found in sibling node */
 		}
